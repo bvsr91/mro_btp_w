@@ -17,12 +17,21 @@
         },
         "dataSources": {
             "mainService": {
-                "uri": "MroSrv/",
+                "uri": "v2/MroSrv/",
                 "type": "OData",
                 "settings": {
                     "annotations": [],
                     "localUri": "localService/metadata.xml",
-                    "odataVersion": "4.0"
+                    "odataVersion": "2.0"
+                }
+            },
+            "mrosrv_v2": {
+                "uri": "/v2/MroSrv/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "localUri": "localService/metadata.xml",
+                    "odataVersion": "2.0"
                 }
             }
         },
@@ -85,6 +94,7 @@
                 }
             },
             "": {
+                "type": "sap.ui.model.odata.v2.ODataModel",
                 "dataSource": "mainService",
                 "preload": true,
                 "settings": {
@@ -93,6 +103,21 @@
                     "autoExpandSelect": true,
                     "earlyRequests": true
                 }
+            },
+            "mrosrv_v2": {
+                "type": "sap.ui.model.odata.v2.ODataModel",
+                "dataSource": "mrosrv_v2",
+                "preload": true,
+                "settings": {
+                    "synchronizationMode": "None",
+                    "operationMode": "Server",
+                    "autoExpandSelect": true,
+                    "earlyRequests": true
+                }
+            },
+            "side": {
+                "type": "sap.ui.model.json.JSONModel",
+                "uri": "model/sideContent.json"
             }
         },
         "resources": {
@@ -109,25 +134,71 @@
                 "async": true,
                 "viewPath": "com.fe.zmroui.view",
                 "controlAggregation": "pages",
-                "controlId": "app",
+                "controlId": "mainContents",
                 "clearControlAggregation": false
             },
             "routes": [
                 {
-                    "name": "RouteApp",
+                    "name": "search",
                     "pattern": "",
-                    "target": [
-                        "TargetApp"
-                    ]
+                    "target": "search"
+                },
+                {
+                    "name": "vendorList",
+                    "pattern": "vendorList",
+                    "target": "vendorList"
+                },
+                {
+                    "name": "pricingCond",
+                    "pattern": "pricing",
+                    "target": "pricingCond"
+                },
+                {
+                    "name": "myInbox",
+                    "pattern": "myInbox",
+                    "target": "myInbox"
+                },
+                {
+                    "name": "notFound",
+                    "pattern": "notFound",
+                    "target": "notFound"
                 }
             ],
             "targets": {
-                "TargetApp": {
+                "search": {
+                    "viewName": "Search",
                     "viewType": "XML",
-                    "transition": "slide",
+                    "viewId": "Search",
                     "clearControlAggregation": false,
-                    "viewId": "app",
-                    "viewName": "App"
+                    "transition": "show"
+                },
+                "vendorList": {
+                    "viewName": "VendorList",
+                    "viewType": "XML",
+                    "viewId": "VendorList",
+                    "clearControlAggregation": false,
+                    "transition": "show"
+                },
+                "pricingCond": {
+                    "viewName": "PricingCond",
+                    "viewType": "XML",
+                    "viewId": "PricingCond",
+                    "clearControlAggregation": false,
+                    "transition": "show"
+                },
+                "myInbox": {
+                    "viewName": "MyInbox",
+                    "viewType": "XML",
+                    "viewId": "MyInbox",
+                    "clearControlAggregation": false,
+                    "transition": "show"
+                },
+                "notFound": {
+                    "viewName": "NotFound",
+                    "viewType": "XML",
+                    "viewId": "NotFound",
+                    "clearControlAggregation": false,
+                    "transition": "show"
                 }
             }
         },
@@ -135,7 +206,7 @@
             "viewName": "com.fe.zmroui.view.App",
             "type": "XML",
             "async": true,
-            "id": "App"
+            "id": "mainContents"
         }
     },
     "sap.cloud": {

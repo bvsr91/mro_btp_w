@@ -1,0 +1,1 @@
+sap.ui.define(["./BaseController","../model/formatter"],function(o,t){"use strict";return o.extend("com.fe.zmroui.controller.NotFound",{formatter:t,onInit:function(){},onReload:function(){this.getRouter().navTo("search");window.location.reload()}})});
