@@ -5,8 +5,8 @@
     xmlns:tnt="sap.tnt">
     <tnt:ToolPage id="app" sideExpanded="{userModel>/isExpanded}" class="sapUiNoMarginBegin sapUiResponsivePadding">
         <tnt:header>
-            <tnt:ToolHeader>
-                <Button id="sideNavigationToggleButton" icon="sap-icon://menu2" type="Transparent" press=".onSideNavButtonPress" tooltip="{i18n>collpaseMenuButtonText}">
+            <tnt:ToolHeader design="Transparent" style="Clear">
+                <Button id="sideNavigationToggleButton" icon="sap-icon://menu2" type="Emphasized" press=".onSideNavButtonPress" tooltip="{i18n>collpaseMenuButtonText}">
                     <layoutData>
                         <OverflowToolbarLayoutData priority="NeverOverflow"/>
                     </layoutData>
