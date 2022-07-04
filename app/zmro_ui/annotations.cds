@@ -1,0 +1,1 @@
+using MroService as service from '../../srv/cat-service';

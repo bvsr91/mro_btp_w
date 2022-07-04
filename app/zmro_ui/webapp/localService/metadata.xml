@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+        <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="MroService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="Roles" EntityType="MroService.Roles"/>
+                <EntitySet Name="Users" EntityType="MroService.Users">
+                    <NavigationPropertyBinding Path="role" Target="Roles"/>
+                </EntitySet>
+                <EntitySet Name="MaintainApproval" EntityType="MroService.MaintainApproval"/>
+                <EntitySet Name="VendorList" EntityType="MroService.VendorList"/>
+                <EntitySet Name="PricingConditions" EntityType="MroService.PricingConditions"/>
+                <EntitySet Name="CheckUserRole" EntityType="MroService.CheckUserRole">
+                    <NavigationPropertyBinding Path="role" Target="Roles"/>
+                </EntitySet>
+            </EntityContainer>
+            <EntityType Name="Roles">
+                <Key>
+                    <PropertyRef Name="role"/>
+                </Key>
+                <Property Name="role" Type="Edm.String" Nullable="false"/>
+                <Property Name="description" Type="Edm.String"/>
+            </EntityType>
+            <EntityType Name="Users">
+                <Key>
+                    <PropertyRef Name="user"/>
+                </Key>
+                <Property Name="user" Type="Edm.String" Nullable="false"/>
+                <NavigationProperty Name="role" Type="MroService.Roles">
+                    <ReferentialConstraint Property="role_role" ReferencedProperty="role"/>
+                </NavigationProperty>
+                <Property Name="role_role" Type="Edm.String"/>
+            </EntityType>
+            <EntityType Name="MaintainApproval">
+                <Key>
+                    <PropertyRef Name="userid"/>
+                    <PropertyRef Name="managerid"/>
+                </Key>
+                <Property Name="userid" Type="Edm.String" Nullable="false"/>
+                <Property Name="managerid" Type="Edm.String" Nullable="false"/>
+            </EntityType>
+            <EntityType Name="VendorList">
+                <Key>
+                    <PropertyRef Name="manufacturerCode"/>
+                    <PropertyRef Name="localManufacturerCode"/>
+                    <PropertyRef Name="country"/>
+                </Key>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="manufacturerCode" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="localManufacturerCode" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="country" Type="Edm.String" MaxLength="3" Nullable="false"/>
+                <Property Name="uuid" Type="Edm.Guid"/>
+                <Property Name="manufacturerCodeDesc" Type="Edm.String" MaxLength="35"/>
+                <Property Name="localManufacturerCodeDesc" Type="Edm.String" MaxLength="35"/>
+                <Property Name="countryDesc" Type="Edm.String" MaxLength="15"/>
+                <Property Name="initiator" Type="Edm.String"/>
+                <Property Name="approver" Type="Edm.String"/>
+                <Property Name="Status" Type="Edm.String" MaxLength="10"/>
+            </EntityType>
+            <EntityType Name="PricingConditions">
+                <Key>
+                    <PropertyRef Name="ManufacturerCode"/>
+                    <PropertyRef Name="Country"/>
+                </Key>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="ManufacturerCode" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="Country" Type="Edm.String" MaxLength="3" Nullable="false"/>
+                <Property Name="uuid" Type="Edm.Guid"/>
+                <Property Name="manufacturerCodeDesc" Type="Edm.String" MaxLength="35"/>
+                <Property Name="countryDesc" Type="Edm.String" MaxLength="15"/>
+                <Property Name="LocalCurrency" Type="Edm.String" MaxLength="5"/>
+                <Property Name="ExchangeRate" Type="Edm.Decimal" Scale="2" Precision="4"/>
+                <Property Name="CountryFactor" Type="Edm.Decimal" Scale="2" Precision="4"/>
+                <Property Name="ValidityStart" Type="Edm.Date"/>
+                <Property Name="ValidityEnd" Type="Edm.Date"/>
+                <Property Name="initiator" Type="Edm.String"/>
+                <Property Name="approver" Type="Edm.String"/>
+                <Property Name="ld_initiator" Type="Edm.String"/>
+                <Property Name="Status" Type="Edm.String" MaxLength="10"/>
+            </EntityType>
+            <EntityType Name="CheckUserRole">
+                <Key>
+                    <PropertyRef Name="user"/>
+                </Key>
+                <Property Name="user" Type="Edm.String" Nullable="false"/>
+                <NavigationProperty Name="role" Type="MroService.Roles">
+                    <ReferentialConstraint Property="role_role" ReferencedProperty="role"/>
+                </NavigationProperty>
+                <Property Name="role_role" Type="Edm.String"/>
+            </EntityType>
+            <Annotations Target="MroService.VendorList/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+                </Annotations>
+                <Annotations Target="MroService.VendorList/createdBy">
+                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                    <Annotation Term="Core.Immutable" Bool="true"/>
+                    <Annotation Term="Core.Computed" Bool="true"/>
+                    <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                        <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+                        </Annotations>
+                        <Annotations Target="MroService.VendorList/modifiedAt">
+                            <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                            <Annotation Term="Core.Computed" Bool="true"/>
+                            <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+                            </Annotations>
+                            <Annotations Target="MroService.VendorList/modifiedBy">
+                                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                <Annotation Term="Core.Computed" Bool="true"/>
+                                <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                    <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/manufacturerCode">
+                                        <Annotation Term="Core.Description" String="Manufacturer Code"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/localManufacturerCode">
+                                        <Annotation Term="Core.Description" String="Local Manufacturer"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/country">
+                                        <Annotation Term="Core.Description" String="Country"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/manufacturerCodeDesc">
+                                        <Annotation Term="Core.Description" String="Manufacturer Desc"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/localManufacturerCodeDesc">
+                                        <Annotation Term="Core.Description" String="Local Manufacturer Desc"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/countryDesc">
+                                        <Annotation Term="Core.Description" String="Country Desc"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/initiator">
+                                        <Annotation Term="Core.Description" String="Initiator"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/approver">
+                                        <Annotation Term="Core.Description" String="Approver"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.VendorList/Status">
+                                        <Annotation Term="Core.Description" String="Status"/>
+                                    </Annotations>
+                                    <Annotations Target="MroService.PricingConditions/createdAt">
+                                        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                        <Annotation Term="Core.Immutable" Bool="true"/>
+                                        <Annotation Term="Core.Computed" Bool="true"/>
+                                        <Annotation Term="Common.Label" String="{i18n>CreatedAt}"/>
+                                        </Annotations>
+                                        <Annotations Target="MroService.PricingConditions/createdBy">
+                                            <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                            <Annotation Term="Core.Immutable" Bool="true"/>
+                                            <Annotation Term="Core.Computed" Bool="true"/>
+                                            <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                <Annotation Term="Common.Label" String="{i18n>CreatedBy}"/>
+                                                </Annotations>
+                                                <Annotations Target="MroService.PricingConditions/modifiedAt">
+                                                    <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                    <Annotation Term="Core.Computed" Bool="true"/>
+                                                    <Annotation Term="Common.Label" String="{i18n>ChangedAt}"/>
+                                                    </Annotations>
+                                                    <Annotations Target="MroService.PricingConditions/modifiedBy">
+                                                        <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                                                        <Annotation Term="Core.Computed" Bool="true"/>
+                                                        <Annotation Term="Core.Description" String="{i18n>UserID.Description}"/>
+                                                            <Annotation Term="Common.Label" String="{i18n>ChangedBy}"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/ManufacturerCode">
+                                                                <Annotation Term="Core.Description" String="Manufacturer Code"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/Country">
+                                                                <Annotation Term="Core.Description" String="Country"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/manufacturerCodeDesc">
+                                                                <Annotation Term="Core.Description" String="Manufacturer Desc"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/countryDesc">
+                                                                <Annotation Term="Core.Description" String="Country Desc"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/LocalCurrency">
+                                                                <Annotation Term="Core.Description" String="Local Currency"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/ExchangeRate">
+                                                                <Annotation Term="Core.Description" String="Exchange Rate"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/CountryFactor">
+                                                                <Annotation Term="Core.Description" String="Country Factor"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/ValidityStart">
+                                                                <Annotation Term="Core.Description" String="Validity Start Date"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/ValidityEnd">
+                                                                <Annotation Term="Core.Description" String="Validity End Date"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/initiator">
+                                                                <Annotation Term="Core.Description" String="Initiator"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/approver">
+                                                                <Annotation Term="Core.Description" String="Approver"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/ld_initiator">
+                                                                <Annotation Term="Core.Description" String="Local Delivery Initiator"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.PricingConditions/Status">
+                                                                <Annotation Term="Core.Description" String="Status"/>
+                                                            </Annotations>
+                                                            <Annotations Target="MroService.EntityContainer/CheckUserRole">
+                                                                <Annotation Term="Capabilities.DeleteRestrictions">
+                                                                    <Record Type="Capabilities.DeleteRestrictionsType">
+                                                                        <PropertyValue Property="Deletable" Bool="false"/>
+                                                                    </Record>
+                                                                </Annotation>
+                                                                <Annotation Term="Capabilities.InsertRestrictions">
+                                                                    <Record Type="Capabilities.InsertRestrictionsType">
+                                                                        <PropertyValue Property="Insertable" Bool="false"/>
+                                                                    </Record>
+                                                                </Annotation>
+                                                                <Annotation Term="Capabilities.UpdateRestrictions">
+                                                                    <Record Type="Capabilities.UpdateRestrictionsType">
+                                                                        <PropertyValue Property="Updatable" Bool="false"/>
+                                                                    </Record>
+                                                                </Annotation>
+                                                            </Annotations>
+                                                        </Schema>
+                                                    </edmx:DataServices>
+                                                </edmx:Edmx>

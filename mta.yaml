@@ -1,0 +1,169 @@
+_schema-version: "3.1"
+ID: mro_btp
+description: "MRO Application"
+version: 1.0.0
+
+parameters:
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        # set 'CDS_ENV=node' to pick the 'node' build profile settings, defined in package.json
+        - npx -p @sap/cds-dk cds build --profile production,node
+
+modules:
+  - name: mro_btp-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: mro_btp-db-hdi-container
+      - name: mro_btp-uaa
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    build-parameters:
+      builder: npm-ci
+      ignore: [ "node_modules/" ]
+
+  # -------------------- SIDECAR MODULE ------------------------    
+  - name: mro_btp-db-deployer
+    # ------------------------------------------------------------
+    type: hdb
+    path: db
+    requires:
+      - name: mro_btp-db-hdi-container
+    parameters:
+      buildpack: nodejs_buildpack
+
+  # ------------------ APPLICATION CONTENT ---------------------    
+  - name: mro_btp-app-content
+    # ------------------------------------------------------------
+    type: com.sap.application.content
+    path: app
+    requires:
+      - name: mro_btp-destination-service
+      - name: mro_btp-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - name: mro_btp-app-mro
+          artifacts:
+            - comfezmroui.zip
+          target-path: resources/
+
+  # ------------- APPLICATION: MRO UI ----------------
+  - name: mro_btp-app-mro
+    # ------------------------------------------------------------
+    type: html5
+    path: app/zmro_ui
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build
+      supported-platforms: []
+
+  # ------------------ DESTINATION CONTENT ---------------------
+  - name: mro_btp-destinationcontent
+    # ------------------------------------------------------------
+    type: com.sap.application.content
+    build-parameters:
+      no-source: true
+    requires:
+      - name: mro_btp-uaa
+        parameters:
+          service-key:
+            name: mro_btp-uaa-key
+      - name: mro_btp-repo-host
+        parameters:
+          service-key:
+            name: mro_btp-repo-host-key
+      - name: mro_btp-destination-service
+        parameters:
+          content-target: true
+    parameters:
+      content:
+        instance:
+          existing_destinations_policy: update
+          destinations:
+            - Name: mro_btp-html5-repository
+              ServiceInstanceName: mro_btp-repo-host
+              ServiceKeyName: mro_btp-repo-host-key
+              sap.cloud.service: com.fe.mro_btp
+            - Name: mro_btp-uaa
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: mro_btp-uaa
+              ServiceKeyName: mro_btp-uaa-key
+              sap.cloud.service: com.fe.mro_btp
+
+resources:
+  # ------------------------------------------------------------
+  - name: mro_btp-db-hdi-container
+    # ------------------------------------------------------------
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+    properties:
+      hdi-service-name: ${service-name}
+
+  # ------------------------------------------------------------
+  - name: mro_btp-uaa
+    # ------------------------------------------------------------
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./app/zmro_ui/xs-security.json
+      config:
+        xsappname: mro_btp-${space}
+        tenant-mode: dedicated
+        role-collections:
+          - name: 'mro_btp-mroUser-${space}'
+            description: Access MRO App
+            role-template-references:
+              - $XSAPPNAME.mroUser_sc
+
+  - name: mro_btp-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  # ------------------------------------------------------------
+  - name: mro_btp-html5-repo-runtime
+    # ------------------------------------------------------------
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+
+  # ------------------------------------------------------------
+  - name: mro_btp-destination-service
+    # ------------------------------------------------------------
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv-api
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        version: 1.0.0
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            existing_destinations_policy: update
+            destinations:
+              - Name: mro_btp-srv
+                URL: ~{srv-api/srv-url}
+                Authentication: NoAuthentication
+                Type: HTTP
+                ProxyType: Internet
+                HTML5.ForwardAuthToken: true
+                HTML5.DynamicDestination: true

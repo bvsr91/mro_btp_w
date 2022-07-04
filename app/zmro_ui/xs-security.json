@@ -1,0 +1,19 @@
+{
+    "scopes": [
+        {
+            "name": "$XSAPPNAME.mroUser_sc",
+            "description": "MRO User"
+        }
+    ],
+    "attributes": [],
+    "role-templates": [
+        {
+            "name": "mroUser",
+            "description": "generated",
+            "scope-references": [
+                "$XSAPPNAME.mroUser_sc"
+            ],
+            "attribute-references": []
+        }
+    ]
+}
